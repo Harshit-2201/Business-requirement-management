@@ -1,0 +1,584 @@
+{
+  "info": {
+    "_postman_id": "8b51d382-74f0-4e31-9f22-0db9d5e3ef54",
+    "name": "Zero-Knowledge Password Manager API",
+    "description": "Comprehensive Postman collection for the Zero-Knowledge Secure Password Manager backend (Spring Boot 3 + Java 21 + MySQL).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "folder_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "tag_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "credential_id",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"alice_security\",\n  \"email\": \"alice@example.com\",\n  \"password\": \"MasterAuthPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.token) {",
+                  "    pm.collectionVariables.set('token', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"usernameOrEmail\": \"alice_security\",\n  \"password\": \"MasterAuthPass123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Setup Master Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{token}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"masterKeySalt\": \"dGVzdC1zYWx0LTE2LWJ5dGVzCg==\",\n  \"masterKeyVerifier\": \"zkVerifierHashToken992817264aef==\",\n  \"encryptedVaultKey\": \"Y3J5cHRvLXZhdWx0LWtleS1lbmNyeXB0ZWQtYWVzZ2NtCg==\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/setup-master-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "setup-master-password"]
+            }
+          }
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                { "key": "token", "value": "{{token}}", "type": "string" }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"MasterAuthPass123!\",\n  \"newPassword\": \"BrandNewMasterPass456!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "change-password"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "2. Vault Module",
+      "item": [
+        {
+          "name": "Create Vault",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"encryptedVaultKey\": \"U2FsdGVkX1+vUpp3usGB1+hHG5fv2Re123456==\",\n  \"vaultSalt\": \"s0m3S4ltV4lu3B4s364==\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vault/create",
+              "host": ["{{base_url}}"],
+              "path": ["vault", "create"]
+            }
+          }
+        },
+        {
+          "name": "Unlock Vault",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"masterKeyVerifier\": \"zkVerifierHashToken992817264aef==\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/vault/unlock",
+              "host": ["{{base_url}}"],
+              "path": ["vault", "unlock"]
+            }
+          }
+        },
+        {
+          "name": "Lock Vault",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/vault/lock",
+              "host": ["{{base_url}}"],
+              "path": ["vault", "lock"]
+            }
+          }
+        },
+        {
+          "name": "Get Vault Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/vault/status",
+              "host": ["{{base_url}}"],
+              "path": ["vault", "status"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "3. Credential Module",
+      "item": [
+        {
+          "name": "Create Credential",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('credential_id', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"GitHub Primary Account\",\n  \"type\": \"WEBSITE\",\n  \"url\": \"https://github.com/login\",\n  \"username\": \"alice_dev\",\n  \"encryptedPassword\": \"AES256GCM_IV_CIPHERTEXT_TAG_BASE64_PAYLOAD\",\n  \"notes\": \"Encrypted personal note regarding 2FA recovery keys\",\n  \"folderId\": null,\n  \"tagNames\": [\"developer\", \"critical\"],\n  \"favorite\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/credentials",
+              "host": ["{{base_url}}"],
+              "path": ["credentials"]
+            }
+          }
+        },
+        {
+          "name": "Get All Credentials",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/credentials",
+              "host": ["{{base_url}}"],
+              "path": ["credentials"]
+            }
+          }
+        },
+        {
+          "name": "Get Credential By ID",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/credentials/{{credential_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["credentials", "{{credential_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Credential",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"GitHub Primary Account (Updated)\",\n  \"type\": \"WEBSITE\",\n  \"url\": \"https://github.com/login\",\n  \"username\": \"alice_dev_v2\",\n  \"encryptedPassword\": \"NEW_AES256GCM_PAYLOAD_HERE\",\n  \"notes\": \"Rotated access tokens\",\n  \"tagNames\": [\"developer\", \"production\"],\n  \"favorite\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/credentials/{{credential_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["credentials", "{{credential_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Credential",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/credentials/{{credential_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["credentials", "{{credential_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "4. Folder Module",
+      "item": [
+        {
+          "name": "Create Folder",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('folder_id', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Work & Cloud Infrastructure\",\n  \"description\": \"AWS, GCP, Cloudflare, and Database root keys\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/folders",
+              "host": ["{{base_url}}"],
+              "path": ["folders"]
+            }
+          }
+        },
+        {
+          "name": "Get Folders",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/folders",
+              "host": ["{{base_url}}"],
+              "path": ["folders"]
+            }
+          }
+        },
+        {
+          "name": "Update Folder",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Infrastructure & Cloud\",\n  \"description\": \"Updated folder description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/folders/{{folder_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["folders", "{{folder_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Folder",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/folders/{{folder_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["folders", "{{folder_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "5. Tag Module",
+      "item": [
+        {
+          "name": "Create Tag",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.data && jsonData.data.id) {",
+                  "    pm.collectionVariables.set('tag_id', jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"production\",\n  \"colorHex\": \"#EF4444\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tags",
+              "host": ["{{base_url}}"],
+              "path": ["tags"]
+            }
+          }
+        },
+        {
+          "name": "Get Tags",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/tags",
+              "host": ["{{base_url}}"],
+              "path": ["tags"]
+            }
+          }
+        },
+        {
+          "name": "Update Tag",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"prod-critical\",\n  \"colorHex\": \"#DC2626\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tags", "{{tag_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Delete Tag",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "DELETE",
+            "url": {
+              "raw": "{{base_url}}/tags/{{tag_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["tags", "{{tag_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "6. Search Module",
+      "item": [
+        {
+          "name": "Search Credentials by Query & Filters",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/credentials/search?name=github&type=WEBSITE",
+              "host": ["{{base_url}}"],
+              "path": ["credentials", "search"],
+              "query": [
+                { "key": "name", "value": "github" },
+                { "key": "type", "value": "WEBSITE" },
+                { "key": "username", "value": "", "disabled": true },
+                { "key": "url", "value": "", "disabled": true },
+                { "key": "tag", "value": "developer", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "7. Password Generator",
+      "item": [
+        {
+          "name": "Generate Password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"length\": 20,\n  \"uppercase\": true,\n  \"lowercase\": true,\n  \"numbers\": true,\n  \"symbols\": true,\n  \"excludeAmbiguous\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/password/generate",
+              "host": ["{{base_url}}"],
+              "path": ["password", "generate"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "8. Audit Module",
+      "item": [
+        {
+          "name": "Get Audit Logs (Paginated)",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/audit?page=0&size=20",
+              "host": ["{{base_url}}"],
+              "path": ["audit"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" },
+                { "key": "all", "value": "false" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
