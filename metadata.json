@@ -1,0 +1,6 @@
+{
+  "name": "Zero-Knowledge Password Manager API",
+  "description": "Secure Zero-Knowledge Password Manager Backend built in Java 21 with Spring Boot 3, Spring Security, JWT, AES-256-GCM, Argon2id, JPA, MySQL, Swagger/OpenAPI, and Docker.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
