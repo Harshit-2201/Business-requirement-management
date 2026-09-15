@@ -1,0 +1,13 @@
+package com.passwordmanager.entity;
+
+public enum AuditEventType {
+    LOGIN,
+    LOGIN_FAILED,
+    VAULT_UNLOCKED,
+    PASSWORD_VIEWED,
+    PASSWORD_COPIED,
+    PASSWORD_GENERATED,
+    CREDENTIAL_CREATED,
+    CREDENTIAL_UPDATED,
+    CREDENTIAL_DELETED
+}
