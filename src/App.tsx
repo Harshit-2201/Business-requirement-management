@@ -59,7 +59,7 @@ export default function App() {
   ];
 
   const endpoints: Endpoint[] = [
-    // 1. Authentication
+    // 1. Auth
     {
       id: 'auth-register',
       module: 'auth',
